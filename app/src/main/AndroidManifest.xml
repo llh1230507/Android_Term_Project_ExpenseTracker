@@ -12,6 +12,10 @@
         <activity android:name=".ui.auth.SignupActivity" />
         <activity android:name=".ui.stats.StatsActivity"/>
         <activity android:name=".ui.main.TransactionDetailsActivity"/>
+        <activity android:name=".ui.profile.EditProfileActivity" />
+        <activity android:name=".ui.stats.CategoryDetailsActivity" />
+
+
 
 
 

@@ -43,28 +43,47 @@ class FirestoreRepository {
             }
     }
 
-    fun addExpense(title: String, category: String, amount: Double, done: (Boolean, String?) -> Unit) {
+    fun addExpense(title: String, category: String, amount: Double, dateMillis: Long, done: (Boolean, String?) -> Unit) {
         val data = mapOf(
             "title" to title,
             "category" to category,
             "amount" to amount,
-            "date" to System.currentTimeMillis()
+            "date" to dateMillis
         )
         expensesCol().add(data)
             .addOnSuccessListener { done(true, null) }
             .addOnFailureListener { done(false, it.message) }
     }
 
-    fun updateExpense(expenseId: String, title: String, category: String, amount: Double, done: (Boolean, String?) -> Unit) {
+    fun updateExpense(expenseId: String, title: String, category: String, amount: Double, dateMillis: Long, done: (Boolean, String?) -> Unit)
+    {
         val data = mapOf(
             "title" to title,
             "category" to category,
-            "amount" to amount
+            "amount" to amount,
+            "date" to dateMillis
         )
         expensesCol().document(expenseId).update(data)
             .addOnSuccessListener { done(true, null) }
             .addOnFailureListener { done(false, it.message) }
     }
+
+    fun getExpensesInRange(start: Long, end: Long, done: (List<Expense>, String?) -> Unit) {
+        expensesCol()
+            .whereGreaterThanOrEqualTo("date", start)
+            .whereLessThan("date", end)
+            .orderBy("date")
+            .get()
+            .addOnSuccessListener { snap ->
+                val list = snap.documents.map { doc ->
+                    val e = doc.toObject(Expense::class.java) ?: Expense()
+                    e.copy(id = doc.id)
+                }
+                done(list, null)
+            }
+            .addOnFailureListener { done(emptyList(), it.message) }
+    }
+
 
     fun deleteExpense(expenseId: String, done: (Boolean, String?) -> Unit) {
         expensesCol().document(expenseId).delete()

@@ -17,12 +17,15 @@ class TransactionDetailsActivity : AppCompatActivity() {
         b = ActivityTransactionDetailsBinding.inflate(layoutInflater)
         setContentView(b.root)
 
+        // ✅ back button
+        b.backBtn.setOnClickListener {
+            finish()
+        }
+
         val expenseId = intent.getStringExtra("expenseId") ?: run {
             finish()
             return
         }
-
-        b.backBtn.setOnClickListener { finish() }
 
         b.editBtn.setOnClickListener {
             startActivity(Intent(this, AddEditExpenseActivity::class.java).putExtra("expenseId", expenseId))
@@ -45,12 +48,12 @@ class TransactionDetailsActivity : AppCompatActivity() {
                 finish()
                 return@getExpense
             }
+
             b.amountTv.text = "-฿%.2f".format(e.amount)
             b.titleTv.text = e.title
-            b.dateTv.text = e.dateText() // you can adjust
+            b.dateTv.text = e.dateText()
             b.categoryValueTv.text = e.category
             b.statusChip.text = "Completed"
-            b.noteValueTv.text = "—"
             b.txIdValueTv.text = "#${e.id.take(8)}"
         }
     }

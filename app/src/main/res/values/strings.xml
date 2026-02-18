@@ -1,3 +1,26 @@
 <resources>
-    <string name="app_name">ExpenseTracker</string>
+    <string name="back">Back</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="app_name">Expense Tracker</string>
+    <string name="password">Password</string>
+
+
+    <string name="add_transaction">Add Transaction</string>
+    <string name="save_transaction">Save Transaction</string>
+
+
+
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="title">Title</string>
+    <string name="category">Category</string>
+    <string name="amount">Amount</string>
+
+
+
+
 </resources>

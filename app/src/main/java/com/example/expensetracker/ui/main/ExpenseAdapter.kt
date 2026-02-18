@@ -26,6 +26,7 @@ class ExpenseAdapter(
 
         holder.b.titleTv.text = e.title
         holder.b.categoryTv.text = e.category
+        holder.b.dateTv.text = e.dateText()
 
         val amountText = String.format(Locale.getDefault(), "฿%.2f", e.amount)
         holder.b.amountTv.text = "-$amountText"

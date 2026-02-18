@@ -34,6 +34,22 @@ class MainActivity : AppCompatActivity() {
         b = ActivityMainBinding.inflate(layoutInflater)
         setContentView(b.root)
 
+        b.nameTv.text = "Loading..."
+
+        repo.getProfile { p, err ->
+            runOnUiThread {
+                if (p != null && p.name.isNotBlank()) {
+                    b.nameTv.text = p.name
+                } else {
+                    // fallback if no profile doc yet
+                    b.nameTv.text = FirebaseAuth.getInstance().currentUser?.email ?: "User"
+                    if (err != null) {
+                        Toast.makeText(this, err, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
         b.bottomNav.selectedItemId = R.id.nav_home
 
         b.bottomNav.setOnItemSelectedListener(NavigationBarView.OnItemSelectedListener { item ->
@@ -91,6 +107,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        // start of today -> start of tomorrow
+        val cal = java.util.Calendar.getInstance()
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
+        cal.set(java.util.Calendar.MINUTE, 0)
+        cal.set(java.util.Calendar.SECOND, 0)
+        cal.set(java.util.Calendar.MILLISECOND, 0)
+        val startToday = cal.timeInMillis
+        cal.add(java.util.Calendar.DAY_OF_MONTH, 1)
+        val startTomorrow = cal.timeInMillis
+
         reg = repo.listenExpenses { list, err ->
             if (err != null) {
                 b.totalTv.text = "Total: -"
@@ -99,8 +126,14 @@ class MainActivity : AppCompatActivity() {
                 return@listenExpenses
             }
 
-            adapter.submit(list)
-            val total = list.sumOf { it.amount }
+            // ✅ only today's transactions (and show newest first)
+            val todayList = list
+                .filter { it.date in startToday until startTomorrow }
+                .sortedByDescending { it.date }
+
+            adapter.submit(todayList)
+
+            val total = todayList.sumOf { it.amount }
             b.totalTv.text = "Total: ฿%.2f".format(total)
         }
     }
@@ -110,4 +143,10 @@ class MainActivity : AppCompatActivity() {
         reg?.remove()
         reg = null
     }
+    override fun onResume() {
+        super.onResume()
+        b.bottomNav.selectedItemId = R.id.nav_home
+    }
 }
+
+
